@@ -1,2 +1,0 @@
-#!/bin/bash
-echo "head -10 /etc/passwd"
