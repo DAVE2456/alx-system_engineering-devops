@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
-# installs and configures nginx web server to listen to port 80 and
-# serves a page with content `Hello World!` when / is querried
+# This bash script Installs nginx webserver
 
-apt-get -y update
-apt-get -y install nginx
-echo "Hello World!" | sudo tee /var/www/html/index.html
-sudo /etc/init.d/nginx restart
+apt-get update
+apt-get install nginx -y
+
+
+echo "Hello World!" > /var/www/html/index.html
+
+printf %s "server {
+     listen      80 default_server;
+     listen      [::]:80 default_server;
+     root        /var/www/html;
+     index       index.html index.nginix-debian.html index.htm;
+}
+" > /etc/nginx/sites-available/default
+
+service nginx restart
