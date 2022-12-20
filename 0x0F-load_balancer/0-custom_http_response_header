@@ -1,30 +1,20 @@
 #!/usr/bin/env bash
-# This bash script configures nginx server so that its HTTP response contains a custom header.
+# shellcheck disable=SC2154
+# Configures Nginx so that its HTTP response contains a custom header (on web-01 and web-02)
+# The name of the custom HTTP header must be X-Served-By
+# The value of the custom HTTP header must be the hostname of the server Nginx is running on
 
-apt-get update
-apt-get install nginx -y
+apt-get -y update
+apt-get -y install nginx
 
+new_location='\n\tlocation /redirect_me {\n\t\trewrite ^/redirect_me(.*)$ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;\n\t}'
+error_line='\n\terror_page 404 /404.html;\n\tlocation = /404.html {\n\t\troot /var/www/html;\n\t\tinternal;\n\t}'
 
-echo "Hello World!" > /var/www/html/index.html
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+echo "Hello World!" | sudo tee /var/www/html/index.html
 
-touch /var/www/html/custom_404.html
-echo "Ceci n'est pas une page" > /var/www/html/custom_404.html
+sed -i "/server_name _;/ a \ $new_location" /etc/nginx/sites-available/default
+sed -i "/server_name _;/a \ $error_line" /etc/nginx/sites-enabled/default
+sed -i "11i\\\tadd_header X-Served-By $HOSTNAME;" /etc/nginx/nginx.conf
 
-printf %s "server {
-     listen      80 default_server;
-     listen      [::]:80 default_server;
-     root        /var/www/html;
-     index       index.html index.htm;
-     add_header X-Served-By $HOSTNAME;
-     location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-    error_page 404 /custom_404.html;
-    location /custom_404 {
-      root /var/www/html;
-      internal;
-    }
-}
-" > /etc/nginx/sites-available/default
-
-service nginx restar
+sudo /etc/init.d/nginx restart
