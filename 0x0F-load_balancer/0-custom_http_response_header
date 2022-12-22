@@ -22,6 +22,6 @@ sudo apt-get -y install nginx
 
 sudo sed -i '/listen 80 default_server;/a \\t# Add header in response' /etc/nginx/sites-available/default
 
-sudo sed -i '/# Add header in response/a \\tadd_header X-Served-By web-02;' /etc/nginx/sites-available/default
+sudo sed -i '/# Add header in response/a \\tadd_header X-Served-By $hostname;' /etc/nginx/sites-available/default
 
 sudo systemctl restart nginx
