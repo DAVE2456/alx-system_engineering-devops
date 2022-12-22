@@ -4,8 +4,8 @@
 # The name of the custom HTTP header must be X-Served-By
 # The value of the custom HTTP header must be the hostname of the server Nginx is running on
 
-apt-get -y update
-apt-get -y install nginx
+sudo pt-get -y update
+sudo apt-get -y install nginx
 
 new_location='\n\tlocation /redirect_me {\n\t\trewrite ^/redirect_me(.*)$ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;\n\t}'
 error_line='\n\terror_page 404 /404.html;\n\tlocation = /404.html {\n\t\troot /var/www/html;\n\t\tinternal;\n\t}'
